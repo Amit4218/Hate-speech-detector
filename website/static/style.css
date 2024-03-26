@@ -1,6 +1,6 @@
 @font-face {
     font-family: Monsterrat;
-    src: url(../fonts/Montserrat-VariableFont_wght.ttf);
+    src: url(../static/imageAndFonts/fonts/Montserrat-VariableFont_wght.ttf);
 }
 *{
     margin: 0;
@@ -108,7 +108,7 @@ nav ul li:hover .submenu{
 
 
 #page1 #submission {
-   background-color: #C94E41;
+   background-image: url(../static/imageAndFonts/image/cyberbully-featimg.png);
     width: 100vw;
     height: 80vh;
     background-position: center;
@@ -273,38 +273,4 @@ nav ul li:hover .submenu{
 footer #copyright{
     margin-top: 25px;
     text-align: center;
-}
-
-
-
-
-
-.popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    border-radius: 5px;
-    color: white;
-    z-index: 1000;
-}
-
-.popup-content {
-    text-align: center;
-}
-
-.button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.button:hover {
-    background-color: #0056b3;
 }

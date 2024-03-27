@@ -1,22 +1,15 @@
-from flask import Flask , render_template , request, url_for , redirect , session
-from flask import Blueprint 
+from flask import Blueprint, render_template
 
-auth = Blueprint("auth",__name__)
+auth = Blueprint("auth", __name__)
 
 @auth.route('/')
-def home():
-    return render_template("base.html") 
+def base():
+    return render_template("base.html")
+
 @auth.route('/mission')
-def contact():
+def mission():
     return render_template("mission.html")
 
-
-@auth.route('/Team')
-def services():
-    return   render_template("team.html")
-
-
-@auth.route('/result')
-def result():
-    return render_template("result.html")
-
+@auth.route('/team')
+def team():
+    return render_template("team.html")

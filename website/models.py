@@ -1,75 +1,67 @@
-from flask import Flask, render_template, request, url_for, redirect, Blueprint
+from flask import Blueprint, render_template, request, send_from_directory
 import os
-import requests
+import openai
 
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'mp3', 'wav', 'mp4', 'avi'}
-
+UPLOAD_FOLDER = "website/static/uploads"  
 models = Blueprint("models", __name__)
 
-# Define your Whisper API endpoint
-WHISPER_API_ENDPOINT = "https://your-whisper-api-endpoint.com/transcribe"
+openai.api_key = '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'
 
-@models.route('/', methods=["GET", "POST"])
+# Function to transcribe audio using OpenAI API
+def transcribe_audio(audio_file_path):
+    try:
+        response = openai.Audio.transcriptions.create(model="whisper-1", file=audio_file_path)
+        return response['text']
+    except Exception as e:
+        print(f"Error transcribing audio: {e}")
+        return None
+
+# Function to transcribe video using OpenAI API
+def transcribe_video(video_file_path):
+    try:
+        response = openai.Video.transcriptions.create(model="whisper-1", file=video_file_path)
+        return response['text']
+    except Exception as e:
+        print(f"Error transcribing video: {e}")
+        return None
+
+# Function to detect profanity in text
+def detect_profanity(text):
+    profane_words = set(["profane_word_1", "profane_word_2", "profane_word_3"])  # Add profane words here
+    words = text.lower().split()
+    profane_count = sum(word in profane_words for word in words)
+    return profane_count > 0
+
+# Route for the home page and file upload
+@models.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
         if 'audio' in request.files:
-            file = request.files['audio']
-            if file and allowed_file(file.filename):
-                filename = file.filename
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
-                # Send the audio file to Whisper for transcription
-                transcription = transcribe_audio(os.path.join(UPLOAD_FOLDER, filename))
-                return redirect(url_for('models.result', transcription=transcription))
-            else:
-                return "Invalid file format for audio"
+            audio_file = request.files['audio']
+            if audio_file:
+                audio_filename = audio_file.filename
+                audio_file_path = os.path.join(UPLOAD_FOLDER, audio_filename)
+                audio_file.save(audio_file_path)
+                transcribed_text = transcribe_audio(audio_file_path)
+                if transcribed_text:
+                    profanity_detected = detect_profanity(transcribed_text)
+                    return render_template('result.html', text=transcribed_text, profanity_detected=profanity_detected)
+                else:
+                    return "Error transcribing audio file"
         elif 'video' in request.files:
-            file = request.files['video']
-            if file and allowed_file(file.filename):
-                filename = file.filename
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
-                # Send the video file to Whisper for transcription
-                transcription = transcribe_video(os.path.join(UPLOAD_FOLDER, filename))
-                return redirect(url_for('models.result', transcription=transcription))
-            else:
-                return "Invalid file format for video"
-    return render_template("base.html")
+            video_file = request.files['video']
+            if video_file:
+                video_filename = video_file.filename
+                video_file_path = os.path.join(UPLOAD_FOLDER, video_filename)
+                video_file.save(video_file_path)
+                transcribed_text = transcribe_video(video_file_path)
+                if transcribed_text:
+                    profanity_detected = detect_profanity(transcribed_text)
+                    return render_template('result.html', text=transcribed_text, profanity_detected=profanity_detected)
+                else:
+                    return "Error transcribing video file"
+    return render_template('index.html')
 
-@models.route('/result')
-def result():
-    transcription = request.args.get('transcription', '')
-    return render_template("result.html", transcription=transcription)
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-import requests
-
-def transcribe_audio(audio_file_path):
-    # Make a POST request to WHISPER_API_ENDPOINT with the audio file
-    files = {'audio_file': open(audio_file_path, 'rb')}
-    response = requests.post(WHISPER_API_ENDPOINT, files=files)
-    
-    # Check if the request was successful (status code 200)
-    if response.status_code == 200:
-        # Return the transcribed text from the response
-        return response.text
-    else:
-        # If the request was not successful, print an error message and return None
-        print("Error:", response.status_code, response.text)
-        return None
-
-def transcribe_video(video_file_path):
-    # Make a POST request to WHISPER_API_ENDPOINT with the video file
-    files = {'video_file': open(video_file_path, 'rb')}
-    response = requests.post(WHISPER_API_ENDPOINT, files=files)
-    
-    # Check if the request was successful (status code 200)
-    if response.status_code == 200:
-        # Return the transcribed text from the response
-        return response.text
-    else:
-        # If the request was not successful, print an error message and return None
-        print("Error:", response.status_code, response.text)
-        return None
-
+@models.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)

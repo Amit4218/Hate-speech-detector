@@ -29,6 +29,16 @@ html,body{
     align-items: center;
     justify-content:flex-start;
 }
+ #basicInfo .ani1{
+    overflow: hidden;
+    width: fit-content; 
+}
+.ani1 h2{
+    transform: translateY(100%);
+}
+.ani1 img{
+    transform: translateY(100%);
+}
 #page1 #basicInfo h2{
     color: white;
     font-size: 3vw;
@@ -119,6 +129,13 @@ nav ul li:hover .submenu{
     flex-direction: column;
     color: black;
 }
+#submission .ani1{
+    overflow: hidden;
+    width: fit-content; 
+}
+#submission .ani1 h1{
+    transform: translateX(100%);
+}
 #page1 #submission p {
     margin-top: 5vh;
     font-size: 1.5vw;
@@ -147,7 +164,13 @@ nav ul li:hover .submenu{
 
 
 
-
+#form2 .ani1{
+    overflow: hidden;
+    width: fit-content; 
+}
+#form2 .ani1 h2{
+    transform: translateY(-100%);
+}
 
 #page1 #submission #submit #form2{
     border: 3px solid white;
@@ -199,6 +222,7 @@ nav ul li:hover .submenu{
 }
 
 #blog{
+    display: flex;
     position: relative;
     width: 100%;
     padding: 3vw 2vw;
@@ -215,13 +239,7 @@ nav ul li:hover .submenu{
 .blog3 {
     border-bottom: 1px solid grey;
 }
-#blog img{
-    display: none;
-    width: 25vw;
-    height: 40vh;
-    position: absolute;
-    z-index: 99999999;
-}
+
 #main #page3{
     width: 100vw;
     height: 100vh;

@@ -10,6 +10,6 @@ def base():
 def mission():
     return render_template("mission.html")
 
-@auth.route('/team')
+@auth.route('/Team')
 def team():
     return render_template("team.html")

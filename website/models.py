@@ -1,28 +1,32 @@
 from flask import Blueprint, render_template, request, send_from_directory
 import os
 import openai
+import traceback
 
-UPLOAD_FOLDER = "website/static/uploads"  
+UPLOAD_FOLDER = "website/static/uploads"
+
 models = Blueprint("models", __name__)
-
-openai.api_key = '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'
 
 # Function to transcribe audio using OpenAI API
 def transcribe_audio(audio_file_path):
     try:
-        response = openai.Audio.transcriptions.create(model="whisper-1", file=audio_file_path)
-        return response['text']
+        with open(audio_file_path, "rb") as audio_file:
+            transcription = openai.Audio.transcriptions.create(model="whisper-1", file=audio_file)
+        return transcription.text
     except Exception as e:
+        # Handle any errors that occur during transcription
         print(f"Error transcribing audio: {e}")
+        traceback.print_exc()  # Print detailed traceback for debugging
         return None
 
 # Function to transcribe video using OpenAI API
 def transcribe_video(video_file_path):
     try:
         response = openai.Video.transcriptions.create(model="whisper-1", file=video_file_path)
-        return response['text']
+        return response.text
     except Exception as e:
         print(f"Error transcribing video: {e}")
+        traceback.print_exc()  # Print detailed traceback for debugging
         return None
 
 # Function to detect profanity in text
